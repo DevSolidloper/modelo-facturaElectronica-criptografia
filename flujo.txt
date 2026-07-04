@@ -1,0 +1,201 @@
+Modelo criptográfico actual del sistema
+
+Arquitectura
+
+Servicios: - Registraduría - Wallet - Establecimiento - DIAN
+
+Flujo:
+
+Registraduría -> Wallet -> Establecimiento -> DIAN
+
+------------------------------------------------------------------------
+
+1. Inicialización
+
+Registraduría
+
+Genera o carga un par de claves Ed25519: - SK_REG (privada) - PK_REG
+(pública)
+
+Uso: - Firmar credenciales de identidad.
+
+DIAN
+
+Genera o carga un par de claves RSA-2048: - SK_DIAN - PK_DIAN
+
+Uso: - Descifrar el Token Fiscal enviado por la Wallet.
+
+Establecimiento
+
+Genera o carga un par de claves Ed25519: - SK_EMPRESA - PK_EMPRESA
+
+Uso: - Firmar digitalmente las facturas.
+
+Wallet
+
+Actualmente no requiere un par de claves propio.
+
+------------------------------------------------------------------------
+
+2. Registro del comercio
+
+1.  El establecimiento publica su clave pública.
+2.  Un administrador registra el comercio en la DIAN enviando:
+    -   NIT
+    -   Clave pública Ed25519 del comercio.
+
+La DIAN almacena:
+
+NIT -> Clave pública
+
+No se utiliza cifrado; únicamente intercambio de claves públicas.
+
+------------------------------------------------------------------------
+
+3. Emisión de credencial
+
+La Wallet solicita una credencial a la Registraduría enviando:
+
+-   Cédula
+-   Nombre
+
+La Registraduría crea un documento con la identidad y lo firma usando
+Ed25519.
+
+La Wallet recibe:
+
+-   Credencial
+-   Firma digital
+
+------------------------------------------------------------------------
+
+4. Verificación de la credencial
+
+La Wallet verifica la firma usando la clave pública de la Registraduría.
+
+Si la verificación falla, la credencial es rechazada.
+
+------------------------------------------------------------------------
+
+5. Generación del Token Fiscal
+
+La Wallet obtiene la clave pública RSA de la DIAN.
+
+Posteriormente cifra únicamente la cédula utilizando:
+
+-   RSA-2048
+-   OAEP
+-   SHA-256
+
+Resultado:
+
+TokenFiscal = RSA(PK_DIAN, Cedula)
+
+Solo la DIAN puede recuperar la cédula utilizando su clave privada.
+
+------------------------------------------------------------------------
+
+6. Compra
+
+La Wallet entrega únicamente el Token Fiscal al establecimiento.
+
+El establecimiento nunca recibe:
+
+-   Cédula
+-   Nombre
+-   Correo
+-   Teléfono
+
+------------------------------------------------------------------------
+
+7. Construcción de la factura
+
+El establecimiento crea una factura con:
+
+-   Token Fiscal
+-   Productos
+-   Total
+
+------------------------------------------------------------------------
+
+8. Firma de la factura
+
+La factura se serializa de forma determinística y se firma con Ed25519
+usando la clave privada del establecimiento.
+
+La firma garantiza:
+
+-   Integridad
+-   Autenticidad
+-   No repudio
+
+------------------------------------------------------------------------
+
+9. Envío a la DIAN
+
+La DIAN recibe:
+
+-   NIT
+-   Factura
+-   Firma digital
+
+------------------------------------------------------------------------
+
+10. Verificación de la firma
+
+La DIAN recupera la clave pública asociada al NIT y verifica la firma.
+
+Si la firma no es válida, la factura es rechazada.
+
+------------------------------------------------------------------------
+
+11. Resolución del Token Fiscal
+
+La DIAN descifra el Token Fiscal utilizando:
+
+-   RSA-2048
+-   OAEP
+-   SHA-256
+
+Obtiene la cédula real del contribuyente.
+
+------------------------------------------------------------------------
+
+12. Registro
+
+La DIAN puede asociar:
+
+-   Cédula
+-   Productos
+-   Valor
+-   Fecha
+-   Comercio
+
+sin que el establecimiento haya conocido la identidad del comprador.
+
+------------------------------------------------------------------------
+
+Algoritmos utilizados
+
+  Componente        Algoritmo            Función
+  ----------------- -------------------- ------------------------
+  Registraduría     Ed25519              Firmar credenciales
+  Wallet            Ed25519              Verificar credenciales
+  Wallet            RSA-OAEP + SHA-256   Cifrar la cédula
+  Establecimiento   Ed25519              Firmar facturas
+  DIAN              Ed25519              Verificar firmas
+  DIAN              RSA-OAEP + SHA-256   Descifrar Token Fiscal
+
+------------------------------------------------------------------------
+
+Estado actual
+
+El sistema implementa:
+
+-   Criptografía asimétrica RSA para confidencialidad.
+-   Firmas digitales Ed25519 para autenticidad e integridad.
+-   Un modelo simplificado de infraestructura de clave pública (PKI).
+
+Actualmente no incorpora Zero-Knowledge Proofs. Estos se integrarán
+posteriormente para reducir aún más la información revelada al
+establecimiento.
