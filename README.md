@@ -181,11 +181,6 @@ El establecimiento genera una factura que contiene:
 
 La factura se serializa de forma determinística y se firma utilizando **Ed25519**.
 
-La firma garantiza:
-
-- Integridad
-- Autenticidad
-- No repudio
 
 ---
 
@@ -244,18 +239,7 @@ sin que el establecimiento haya conocido la identidad del comprador.
 | DIAN | Ed25519 | Verificar firmas |
 | DIAN | RSA-OAEP + SHA-256 | Descifrar el Token Fiscal |
 
----
 
-# Propiedades de seguridad
-
-| Propiedad | Mecanismo |
-|-----------|-----------|
-| Confidencialidad | RSA-OAEP |
-| Integridad | Ed25519 |
-| Autenticidad | Ed25519 |
-| No repudio | Ed25519 |
-
----
 
 # Estado actual del proyecto
 
@@ -265,7 +249,3 @@ Actualmente el sistema implementa:
 - Firmas digitales mediante Ed25519.
 - Un modelo simplificado de infraestructura de clave pública (PKI).
 - Persistencia de claves criptográficas entre reinicios.
-
-## Trabajo futuro
-
-La siguiente evolución del proyecto será sustituir el Token Fiscal cifrado mediante RSA por un esquema basado en **Zero-Knowledge Proofs (ZKP)**, permitiendo demostrar propiedades del comprador sin revelar directamente su identidad al establecimiento.

@@ -60,7 +60,7 @@ def recibir_factura(payload: FacturaRequest):
         raise HTTPException(400, "Factura inválida")
 
     # 2. resolver identidad
-    cedula = resolver_token_fiscal(SK_DIAN ,factura.tokenFiscal)
+    cedula = resolver_token_fiscal(SK_DIAN ,payload.factura.tokenFiscal)
     print(f"Factura recibida de comercio {nit} para contribuyente {cedula} con total {factura.total}")
     return {
         "estado": "aceptada",
