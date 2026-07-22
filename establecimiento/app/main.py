@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import httpx
 
 from app.models.factura import FacturaRequest
@@ -13,6 +14,13 @@ SK_EMPRESA, PK_EMPRESA = generar_o_cargar_claves()
 
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/registrar-en-dian")
 def registrar_en_dian():

@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.crypto.keys import cargar_o_generar_claves
 from app.models.credential import Credential
@@ -7,6 +8,13 @@ import json
 from cryptography.hazmat.primitives import serialization
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 SK_REG, PK_REG = cargar_o_generar_claves()
 

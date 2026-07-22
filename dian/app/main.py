@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.crypto.keys import cargar_o_generar_claves
 from cryptography.hazmat.primitives import serialization
@@ -14,8 +15,12 @@ from app.models.factura import FacturaRequest
 
 app = FastAPI()
 
-
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 SK_DIAN, PK_DIAN = cargar_o_generar_claves()
 

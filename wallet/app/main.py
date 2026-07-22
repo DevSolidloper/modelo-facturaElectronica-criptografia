@@ -1,5 +1,6 @@
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.models.credential import Credential
 from app.crypto.verify import verificar_credencial
@@ -10,6 +11,13 @@ from app.services.dian_client import obtener_public_key_dian
 from app.crypto.token_fiscal import generar_token_fiscal
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/store-credential")
 def store_credential(payload: Credential):
